@@ -1,6 +1,3 @@
-# running command:
-# bokeh serve hood2vec-chi.py --show
-
 from bokeh.io import show, output_notebook, output_file
 from bokeh.models import (
     GeoJSONDataSource,
@@ -94,18 +91,7 @@ def make_dataset(zipcodes_to_plot, num_neighbor, period_str):
                 chi_json['features'][zipcodes[distances[neighbor_idx][0]]]['properties']['color_type'] = 1
             if num_neighbor_count == num_neighbor:
                 break
-#             for zipcode_near in distances[:num_neighbor]:
-#                 if zipcode_near[0] in zipcodes:
-#                     chi_json['features'][zipcodes[zipcode_near[0]]]['properties']['color_type'] = 1
-#             print (chi_json['features'][zipcodes[zipcode_near[0]]])
 
-#         for zip_idx in range(len(chi_json['features'])):
-#             if 'color_type' not in chi_json['features'][zip_idx]['properties']:
-#                 chi_json['features'][zip_idx]['properties']['color_type'] = -1
-
-    # with open('chi_json_update.json', 'w') as fp:
-    #     json.dump(chi_json, fp)
-    # with open(r'chi_json_update.json','r') as f:
     geojson = json.dumps(chi_json)
     geo_source = GeoJSONDataSource(geojson = geojson)
     return geo_source
@@ -113,10 +99,6 @@ def make_dataset(zipcodes_to_plot, num_neighbor, period_str):
 
 def update_to(attr, old, new):
     geo_source_new = make_dataset(zipcode_selection.value, int(num_selection.value), period_selection.value)
-#         with open('chi_json_update.json','rt') as json_file:
-#             chi_new = json.load(json_file)
-#         geo_source.update(geo_source_new)
-
     geo_source.geojson = geo_source_new.geojson
 
 def make_plot(geo_source):
@@ -157,10 +139,6 @@ zipcodes_sorted = []
 
 for zip_idx in range(len(chi_json['features'])):
     zipcodes[chi_json['features'][zip_idx]['properties']['ZIP']] = zip_idx
-#         zipcodes_sorted.append(chi_json['features'][zip_idx]['properties']['ZIP'])
-
-# with open('chi_json_update.json', 'w') as fp:
-#     json.dump(chi_json, fp)
 
 
 
@@ -199,11 +177,3 @@ p = make_plot(geo_source)
 
 layout = row(Column(zipcode_selection,num_selection, period_selection), p)
 curdoc().add_root(layout)
-#     doc.theme = Theme(json=yaml.load(
-#             """ attrs:
-#                     Figure:
-
-#                         outline_line_color: white
-#                         toolbar_location: above
-#             """
-#         ))
