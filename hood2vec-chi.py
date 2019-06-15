@@ -1,5 +1,5 @@
 # running command:
-# bokeh serve example.py --show
+# bokeh serve hood2vec-chi.py --show
 
 from bokeh.io import show, output_notebook, output_file
 from bokeh.models import (
@@ -103,10 +103,11 @@ def make_dataset(zipcodes_to_plot, num_neighbor, period_str):
 #             if 'color_type' not in chi_json['features'][zip_idx]['properties']:
 #                 chi_json['features'][zip_idx]['properties']['color_type'] = -1
 
-    with open('chi_json_update.json', 'w') as fp:
-        json.dump(chi_json, fp)
-    with open(r'chi_json_update.json','r') as f:
-        geo_source = GeoJSONDataSource(geojson = f.read())
+    # with open('chi_json_update.json', 'w') as fp:
+    #     json.dump(chi_json, fp)
+    # with open(r'chi_json_update.json','r') as f:
+    geojson = json.dumps(chi_json)
+    geo_source = GeoJSONDataSource(geojson = geojson)
     return geo_source
 
 
@@ -158,8 +159,8 @@ for zip_idx in range(len(chi_json['features'])):
     zipcodes[chi_json['features'][zip_idx]['properties']['ZIP']] = zip_idx
 #         zipcodes_sorted.append(chi_json['features'][zip_idx]['properties']['ZIP'])
 
-with open('chi_json_update.json', 'w') as fp:
-    json.dump(chi_json, fp)
+# with open('chi_json_update.json', 'w') as fp:
+#     json.dump(chi_json, fp)
 
 
 
