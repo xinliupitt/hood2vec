@@ -1,16 +1,4 @@
 bokeh==0.12.5
-certifi==2017.4.17
-chardet==3.0.4
-idna==2.5
-Jinja2==2.9.6
-MarkupSafe==1.0
 numpy==1.12.1
 pandas==0.20.1
-python-dateutil==2.6.0
-pytz==2017.2
 PyYAML==3.12
-requests==2.18.1
-six==1.10.0 
-tornado==4.4.2
-urllib3==1.21.1
-xlrd==1.0.0

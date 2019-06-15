@@ -41,8 +41,8 @@ from bokeh.models import (Select, Column, Row, ColumnDataSource, HoverTool,
 from bokeh.plotting import figure
 from bokeh.io import curdoc
 
-import os
-import datetime
+# import os
+# import datetime
 from collections import OrderedDict
 from bokeh.models.widgets import Select
 from numpy.random import random, normal, lognormal
