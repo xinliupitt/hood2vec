@@ -1,1 +1,1 @@
-web:bokeh serve --port=$PORT --num-procs=0 --host=hood2vec-chi.herokuapp.com --host=* --address=0.0.0.0 --use-xheaders hood2vec-chi.py
+web: bokeh serve --port=$PORT --host=hood2vec-chi.herokuapp.com --host=* --address=0.0.0.0 --use-xheaders hood2vec-chi.py
