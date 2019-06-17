@@ -65,71 +65,6 @@ import yaml
 from bokeh.tile_providers import get_provider, Vendors
 from bokeh.io import curdoc
 
-def make_dataset(zipcodes_to_plot, num_neighbor, period_str):
-    with open('chi-zip-code-tabulation-areas-2012.geojson','rt') as json_file:
-        chi_json = json.load(json_file)
-    chi_json['features'][zipcodes[zipcodes_to_plot]]['properties']['color_type'] = 2
-
-#         print(zipcodes_to_plot)
-
-    chi_zipcode_to_dist = pd.read_pickle('chi_zipcode_to_dist_'+ period_str)
-
-    for zipcode in zipcodes:
-        if zipcode in chi_zipcode_to_dist:
-            chi_json['features'][zipcodes[zipcode]]['properties']['has_data'] = 'YES'
-        else:
-            chi_json['features'][zipcodes[zipcode]]['properties']['has_data'] = 'NO'
-
-
-    if zipcodes_to_plot in chi_zipcode_to_dist:
-        distances = chi_zipcode_to_dist[zipcodes_to_plot]
-#         print (distances)
-        num_neighbor_count = 0
-        for neighbor_idx in range(len(distances)):
-            if distances[neighbor_idx][0] in zipcodes:
-                num_neighbor_count +=1
-                chi_json['features'][zipcodes[distances[neighbor_idx][0]]]['properties']['color_type'] = 1
-            if num_neighbor_count == num_neighbor:
-                break
-
-    geojson = json.dumps(chi_json)
-    geo_source = GeoJSONDataSource(geojson = geojson)
-    return geo_source
-
-
-def update_to(attr, old, new):
-    geo_source_new = make_dataset(zipcode_selection.value, int(num_selection.value), period_selection.value)
-    geo_source.geojson = geo_source_new.geojson
-
-def make_plot(geo_source):
-    color_mapper = LinearColorMapper(palette=Viridis6)
-#         color_mapper = LogColorMapper(palette=OrRd9[::-1])
-#         TOOLS = "pan,wheel_zoom,box_zoom,reset,save"
-    p = figure(title="Chicago",
-#                    tools=TOOLS,\
-#                    x_axis_location=None, y_axis_location=None,\
-               x_axis_type="mercator", y_axis_type="mercator",\
-#                    x_range=(-9820000, -9735000), y_range=(5130000, 5160000)
-#                     plot_height=1200, plot_width=1000
-              )
-#         p.grid.grid_line_color = None
-    p.axis.visible = False
-    p.grid.grid_line_color = None
-#         https://bokeh.pydata.org/en/latest/docs/reference/tile_providers.html
-    p.add_tile(get_provider(Vendors.STAMEN_TERRAIN))
-    p.grid.grid_line_color = None
-    p.patches('xs', 'ys', fill_alpha=0.7, fill_color={'field': 'color_type', 'transform': color_mapper},
-#                   line_color='white', line_width=0.5,
-              source=geo_source,
-             )
-
-    hover = HoverTool(tooltips=[('Zip Code', '@ZIP'),
-                                ('Has Data', '@has_data')
-                    ])
-    p.add_tools(hover)
-
-    return p
-
 with open('chi-zip-code-tabulation-areas-2012.geojson','rt') as json_file:
     chi_json = json.load(json_file)
 
@@ -155,6 +90,95 @@ initial_zipcodes = zipcodes_sorted[0]
 initial_num = 3
 initial_period = 'midday'
 
+zipcodes_to_plot = initial_zipcodes
+num_neighbor = initial_num
+period_str = initial_period
+
+
+with open('chi-zip-code-tabulation-areas-2012.geojson','rt') as json_file:
+    chi_json = json.load(json_file)
+chi_json['features'][zipcodes[zipcodes_to_plot]]['properties']['color_type'] = 2
+
+
+chi_zipcode_to_dist = pd.read_pickle('chi_zipcode_to_dist_'+ period_str)
+
+for zipcode in zipcodes:
+    if zipcode in chi_zipcode_to_dist:
+        chi_json['features'][zipcodes[zipcode]]['properties']['has_data'] = 'YES'
+    else:
+        chi_json['features'][zipcodes[zipcode]]['properties']['has_data'] = 'NO'
+
+
+if zipcodes_to_plot in chi_zipcode_to_dist:
+    distances = chi_zipcode_to_dist[zipcodes_to_plot]
+    num_neighbor_count = 0
+    for neighbor_idx in range(len(distances)):
+        if distances[neighbor_idx][0] in zipcodes:
+            num_neighbor_count +=1
+            chi_json['features'][zipcodes[distances[neighbor_idx][0]]]['properties']['color_type'] = 1
+        if num_neighbor_count == num_neighbor:
+            break
+
+# convert json to string
+geojson = json.dumps(chi_json)
+geo_source = GeoJSONDataSource(geojson = geojson)
+
+def make_map(zipcodes_to_plot = '60608', num_neighbor = 3, period_str = 'midday'):
+    with open('chi-zip-code-tabulation-areas-2012.geojson','rt') as json_file:
+        chi_json = json.load(json_file)
+    chi_json['features'][zipcodes[zipcodes_to_plot]]['properties']['color_type'] = 2
+
+
+    chi_zipcode_to_dist = pd.read_pickle('chi_zipcode_to_dist_'+ period_str)
+
+    for zipcode in zipcodes:
+        if zipcode in chi_zipcode_to_dist:
+            chi_json['features'][zipcodes[zipcode]]['properties']['has_data'] = 'YES'
+        else:
+            chi_json['features'][zipcodes[zipcode]]['properties']['has_data'] = 'NO'
+
+
+    if zipcodes_to_plot in chi_zipcode_to_dist:
+        distances = chi_zipcode_to_dist[zipcodes_to_plot]
+        num_neighbor_count = 0
+        for neighbor_idx in range(len(distances)):
+            if distances[neighbor_idx][0] in zipcodes:
+                num_neighbor_count +=1
+                chi_json['features'][zipcodes[distances[neighbor_idx][0]]]['properties']['color_type'] = 1
+            if num_neighbor_count == num_neighbor:
+                break
+
+    # convert json to string
+    geojson = json.dumps(chi_json)
+    geo_source = GeoJSONDataSource(geojson = geojson)
+#         geo_source.geojson = geo_source_new.geojson
+
+    color_mapper = LinearColorMapper(palette=Viridis6)
+    p = figure(title="Chicago",
+#                    tools=TOOLS,\
+#                    x_axis_location=None, y_axis_location=None,\
+               x_range=(-9780000, -9745000), y_range=(5130000, 5160000),
+               x_axis_type="mercator", y_axis_type="mercator",\
+              )
+    p.axis.visible = False
+    p.grid.grid_line_color = None
+#         https://bokeh.pydata.org/en/latest/docs/reference/tile_providers.html
+#         p.add_tile(get_provider(Vendors.STAMEN_TERRAIN))
+    p.add_tile(CARTODBPOSITRON)
+    p.grid.grid_line_color = None
+    p.patches('xs', 'ys', fill_alpha=0.7, fill_color={'field': 'color_type', 'transform': color_mapper},
+              source=geo_source,
+             )
+
+    hover = HoverTool(tooltips=[('Zip Code', '@ZIP'),
+                                ('Has Data', '@has_data')
+                    ])
+    p.add_tools(hover)
+
+    return p
+
+
+
 zipcode_selection = Select(options=zipcodes_sorted, value = initial_zipcodes, title = 'Zip code area')
 num_selection = Select(options=['3','4','5'], value = str(initial_num), title = 'Number of neareast neighbors')
 period_selection = Select(options=['overnight',\
@@ -164,16 +188,17 @@ period_selection = Select(options=['overnight',\
                                    'night',\
                                    'category'], value = initial_period, title = 'Period')
 
+def update_plot(attr, old, new):
+    layout.children[1] = make_map(zipcodes_to_plot = zipcode_selection.value, \
+                                  num_neighbor = int(num_selection.value), \
+                                  period_str = period_selection.value)
 
-zipcode_selection.on_change('value', update_to)
-num_selection.on_change('value', update_to)
-period_selection.on_change('value', update_to)
+
+zipcode_selection.on_change('value', update_plot)
+num_selection.on_change('value', update_plot)
+period_selection.on_change('value', update_plot)
 
 
-
-geo_source = make_dataset(initial_zipcodes, initial_num, initial_period)
-
-p = make_plot(geo_source)
-
-layout = row(Column(zipcode_selection,num_selection, period_selection), p)
+layout = row(Column(zipcode_selection,num_selection, period_selection), make_map())
+# doc.add_root(layout)
 curdoc().add_root(layout)
