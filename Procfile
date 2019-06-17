@@ -1,1 +1,2 @@
-web: bokeh serve --port=$PORT --num-procs=0 --allow-websocket-origin=hood2vec.herokuapp.com --address=0.0.0.0 --use-xheaders hood2vec-nyc.py; web: bokeh serve --port=$PORT --num-procs=0 --allow-websocket-origin=hood2vec.herokuapp.com --address=0.0.0.0 --use-xheaders hood2vec-chi.py
+web: bokeh serve --port=$PORT --num-procs=0 --allow-websocket-origin=hood2vec.herokuapp.com --address=0.0.0.0 --use-xheaders hood2vec-nyc.py
+web: bokeh serve --port=$PORT --num-procs=0 --allow-websocket-origin=hood2vec.herokuapp.com --address=0.0.0.0 --use-xheaders hood2vec-chi.py
