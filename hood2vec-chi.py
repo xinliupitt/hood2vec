@@ -123,13 +123,17 @@ if zipcodes_to_plot in chi_zipcode_to_dist:
 geojson = json.dumps(chi_json)
 geo_source = GeoJSONDataSource(geojson = geojson)
 
-def make_map(zipcodes_to_plot = '60608', num_neighbor = 3, period_str = 'midday'):
+def make_map(zipcodes_to_plot = '60608', num_neighbor = 3, period_str = 'midday', cate= []):
     with open('chi-zip-code-tabulation-areas-2012.geojson','rt') as json_file:
         chi_json = json.load(json_file)
     chi_json['features'][zipcodes[zipcodes_to_plot]]['properties']['color_type'] = 2
 
+#         print (cate)
+
 
     chi_zipcode_to_dist = pd.read_pickle('chi_zipcode_to_dist_'+ period_str)
+
+
 
     for zipcode in zipcodes:
         if zipcode in chi_zipcode_to_dist:
@@ -137,6 +141,10 @@ def make_map(zipcodes_to_plot = '60608', num_neighbor = 3, period_str = 'midday'
         else:
             chi_json['features'][zipcodes[zipcode]]['properties']['has_data'] = 'NO'
 
+    if cate == [0]:
+        period_str = 'category'
+
+    chi_zipcode_to_dist = pd.read_pickle('chi_zipcode_to_dist_'+ period_str)
 
     if zipcodes_to_plot in chi_zipcode_to_dist:
         distances = chi_zipcode_to_dist[zipcodes_to_plot]
@@ -185,10 +193,13 @@ period_selection = Select(options=['overnight',\
                                    'morning',\
                                    'midday',\
                                    'afternoon',\
-                                   'night',\
-                                   'category'], value = initial_period)
+                                   'night'], value = initial_period)
+category_selection = CheckboxGroup(labels=[' category'], active = [])
+# if active = [0], it means there are a total of 1 option, and it is checked;
+# if active = [0,1], it means there are a total of 2 options, and they are both checked;
+
 div_title = Div(text=\
-          """<h1><tt>hood2vec</tt> Visualization</h1>"""
+          """<h1><tt>hood2vec</tt> app</h1>"""
          )
 
 div_zipcode = Div(text=\
@@ -207,18 +218,27 @@ div_period = Div(text=\
                   "to visualize the period-dependent nearest neighbors of the selected zip code:"
          )
 
+div_cate = Div(text=\
+                  "<br>You can <b>tick</b> to visualize nearest neighbors by "+\
+                  "venue categories; "+\
+                  "You can <b>untick</b> to visualize nearest neighbors by "+\
+                  "<tt>hood2vec</tt> metric: "
+         )
+
 def update_plot(attr, old, new):
     layout.children[1] = make_map(zipcodes_to_plot = zipcode_selection.value, \
                                   num_neighbor = int(num_selection.value), \
-                                  period_str = period_selection.value)
+                                  period_str = period_selection.value,\
+                                  cate = category_selection.active)
 
 
 zipcode_selection.on_change('value', update_plot)
 num_selection.on_change('value', update_plot)
 period_selection.on_change('value', update_plot)
+category_selection.on_change('active', update_plot)
 
 
 layout = row(Column(div_title,div_zipcode,zipcode_selection,div_num,num_selection,\
-                    div_period,period_selection), make_map())
+                    div_period,period_selection, div_cate, category_selection), make_map())
 # doc.add_root(layout)
 curdoc().add_root(layout)
