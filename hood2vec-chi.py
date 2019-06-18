@@ -188,7 +188,7 @@ period_selection = Select(options=['overnight',\
                                    'night',\
                                    'category'], value = initial_period)
 div_title = Div(text=\
-          """<h1><tt>hood2vec</tt> Visualization</h1> <br>"""
+          """<h1><tt>hood2vec</tt> Visualization</h1>"""
          )
 
 div_zipcode = Div(text=\
