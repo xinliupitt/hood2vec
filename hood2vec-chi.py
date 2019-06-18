@@ -157,14 +157,14 @@ def make_map(zipcodes_to_plot = '60608', num_neighbor = 3, period_str = 'midday'
     p = figure(title="Chicago",
 #                    tools=TOOLS,\
 #                    x_axis_location=None, y_axis_location=None,\
-               x_range=(-9780000, -9745000), y_range=(5130000, 5160000),
+               # x_range=(-9780000, -9745000), y_range=(5130000, 5160000),
                x_axis_type="mercator", y_axis_type="mercator",\
               )
     p.axis.visible = False
     p.grid.grid_line_color = None
 #         https://bokeh.pydata.org/en/latest/docs/reference/tile_providers.html
 #         p.add_tile(get_provider(Vendors.STAMEN_TERRAIN))
-    p.add_tile(CARTODBPOSITRON)
+    # p.add_tile(CARTODBPOSITRON)
     p.grid.grid_line_color = None
     p.patches('xs', 'ys', fill_alpha=0.7, fill_color={'field': 'color_type', 'transform': color_mapper},
               source=geo_source,
