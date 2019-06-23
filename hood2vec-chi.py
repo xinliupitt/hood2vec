@@ -70,19 +70,27 @@ with open('chi-zip-code-tabulation-areas-2012.geojson','rt') as json_file:
 
 zipcodes = collections.defaultdict()
 
-zipcodes_sorted = []
 
+
+# record zipcodes in geojson into zipcodes list
 for zip_idx in range(len(chi_json['features'])):
     zipcodes[chi_json['features'][zip_idx]['properties']['ZIP']] = zip_idx
 
 
 
 chi_zipcode_to_dist = pd.read_pickle('chi_zipcode_to_dist_'+ 'midday')
-for zipcode in chi_zipcode_to_dist:
-    if zipcode in zipcodes:
-        zipcodes_sorted.append(zipcode)
-del zipcode
 
+shared_zips = collections.defaultdict(int)
+for zipcode in chi_zipcode_to_dist:
+    shared_zips[zipcode] +=1
+for zipcode in zipcodes:
+    shared_zips[zipcode] +=1
+
+zipcodes_sorted = []
+
+for zipcode in shared_zips:
+    if shared_zips[zipcode] == 2:
+        zipcodes_sorted.append(zipcode)
 
 zipcodes_sorted.sort()
 
@@ -102,8 +110,9 @@ chi_json['features'][zipcodes[zipcodes_to_plot]]['properties']['color_type'] = 2
 
 chi_zipcode_to_dist = pd.read_pickle('chi_zipcode_to_dist_'+ period_str)
 
+
 for zipcode in zipcodes:
-    if zipcode in chi_zipcode_to_dist:
+    if shared_zips[zipcode] == 2:
         chi_json['features'][zipcodes[zipcode]]['properties']['has_data'] = 'YES'
     else:
         chi_json['features'][zipcodes[zipcode]]['properties']['has_data'] = 'NO'
@@ -113,7 +122,7 @@ if zipcodes_to_plot in chi_zipcode_to_dist:
     distances = chi_zipcode_to_dist[zipcodes_to_plot]
     num_neighbor_count = 0
     for neighbor_idx in range(len(distances)):
-        if distances[neighbor_idx][0] in zipcodes:
+        if shared_zips[distances[neighbor_idx][0]] == 2:
             num_neighbor_count +=1
             chi_json['features'][zipcodes[distances[neighbor_idx][0]]]['properties']['color_type'] = 1
         if num_neighbor_count == num_neighbor:
@@ -133,10 +142,14 @@ def make_map(zipcodes_to_plot = '60608', num_neighbor = 3, period_str = 'midday'
 
     chi_zipcode_to_dist = pd.read_pickle('chi_zipcode_to_dist_'+ period_str)
 
-
+    shared_zips = collections.defaultdict(int)
+    for zipcode in chi_zipcode_to_dist:
+        shared_zips[zipcode] +=1
+    for zipcode in zipcodes:
+        shared_zips[zipcode] +=1
 
     for zipcode in zipcodes:
-        if zipcode in chi_zipcode_to_dist:
+        if shared_zips[zipcode] == 2:
             chi_json['features'][zipcodes[zipcode]]['properties']['has_data'] = 'YES'
         else:
             chi_json['features'][zipcodes[zipcode]]['properties']['has_data'] = 'NO'
@@ -150,7 +163,7 @@ def make_map(zipcodes_to_plot = '60608', num_neighbor = 3, period_str = 'midday'
         distances = chi_zipcode_to_dist[zipcodes_to_plot]
         num_neighbor_count = 0
         for neighbor_idx in range(len(distances)):
-            if distances[neighbor_idx][0] in zipcodes:
+            if shared_zips[distances[neighbor_idx][0]] == 2:
                 num_neighbor_count +=1
                 chi_json['features'][zipcodes[distances[neighbor_idx][0]]]['properties']['color_type'] = 1
             if num_neighbor_count == num_neighbor:
