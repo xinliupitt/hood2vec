@@ -118,15 +118,15 @@ for zipcode in zipcodes:
         chi_json['features'][zipcodes[zipcode]]['properties']['has_data'] = 'NO'
 
 
-if zipcodes_to_plot in chi_zipcode_to_dist:
-    distances = chi_zipcode_to_dist[zipcodes_to_plot]
-    num_neighbor_count = 0
-    for neighbor_idx in range(len(distances)):
-        if shared_zips[distances[neighbor_idx][0]] == 2:
-            num_neighbor_count +=1
-            chi_json['features'][zipcodes[distances[neighbor_idx][0]]]['properties']['color_type'] = 1
-        if num_neighbor_count == num_neighbor:
-            break
+# if zipcodes_to_plot in chi_zipcode_to_dist:
+distances = chi_zipcode_to_dist[zipcodes_to_plot]
+num_neighbor_count = 0
+for neighbor_idx in range(len(distances)):
+    if shared_zips[distances[neighbor_idx][0]] == 2:
+        num_neighbor_count +=1
+        chi_json['features'][zipcodes[distances[neighbor_idx][0]]]['properties']['color_type'] = 1
+    if num_neighbor_count == num_neighbor:
+        break
 
 # convert json to string
 geojson = json.dumps(chi_json)
@@ -159,15 +159,15 @@ def make_map(zipcodes_to_plot = '60608', num_neighbor = 3, period_str = 'midday'
 
     chi_zipcode_to_dist = pd.read_pickle('chi_zipcode_to_dist_'+ period_str)
 
-    if zipcodes_to_plot in chi_zipcode_to_dist:
-        distances = chi_zipcode_to_dist[zipcodes_to_plot]
-        num_neighbor_count = 0
-        for neighbor_idx in range(len(distances)):
-            if shared_zips[distances[neighbor_idx][0]] == 2:
-                num_neighbor_count +=1
-                chi_json['features'][zipcodes[distances[neighbor_idx][0]]]['properties']['color_type'] = 1
-            if num_neighbor_count == num_neighbor:
-                break
+    # if zipcodes_to_plot in chi_zipcode_to_dist:
+    distances = chi_zipcode_to_dist[zipcodes_to_plot]
+    num_neighbor_count = 0
+    for neighbor_idx in range(len(distances)):
+        if shared_zips[distances[neighbor_idx][0]] == 2:
+            num_neighbor_count +=1
+            chi_json['features'][zipcodes[distances[neighbor_idx][0]]]['properties']['color_type'] = 1
+        if num_neighbor_count == num_neighbor:
+            break
 
     # convert json to string
     geojson = json.dumps(chi_json)
