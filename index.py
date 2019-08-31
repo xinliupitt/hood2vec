@@ -65,7 +65,10 @@ import yaml
 from bokeh.tile_providers import get_provider, Vendors
 from bokeh.io import curdoc
 
-with open('chi-zip-code-tabulation-areas-2012.geojson','rt') as json_file:
+#
+# initialize the default view of hood2vec.
+#
+with open('chi-zip-code-tabulation-areas-2012.geojson','rt') as json_file:      # load geojson files as the background
     chi_json = json.load(json_file)
 
 zipcodes = collections.defaultdict()
@@ -78,13 +81,17 @@ for zip_idx in range(len(chi_json['features'])):
 
 
 
-chi_zipcode_to_dist = pd.read_pickle('chi_zipcode_to_dist_'+ 'midday')
+chi_zipcode_to_dist = pd.read_pickle('chi_zipcode_to_dist_'+ 'midday')          # load parameters for default view
 
+# chi_zipcode_to_dist stores the content of hood2vec statistical file. It is a dictionary, where keys are zip codes and values are closest zip codes with corresponding distances to key.
+
+# pick up zip codes existing in both geojson file and hood2vec statistical file
 shared_zips = collections.defaultdict(int)
 for zipcode in chi_zipcode_to_dist:
     shared_zips[zipcode] +=1
 for zipcode in zipcodes:
     shared_zips[zipcode] +=1
+
 
 zipcodes_sorted = []
 
@@ -92,6 +99,7 @@ for zipcode in shared_zips:
     if shared_zips[zipcode] == 2:
         zipcodes_sorted.append(zipcode)
 
+# sort the shared zip codes for users to select easily (left part of visualization)
 zipcodes_sorted.sort()
 
 initial_zipcodes = zipcodes_sorted[0]
@@ -103,14 +111,16 @@ num_neighbor = initial_num
 period_str = initial_period
 
 
-with open('chi-zip-code-tabulation-areas-2012.geojson','rt') as json_file:
+with open('chi-zip-code-tabulation-areas-2012.geojson','rt') as json_file:          # load geojson files as the background
     chi_json = json.load(json_file)
-chi_json['features'][zipcodes[zipcodes_to_plot]]['properties']['color_type'] = 2
+chi_json['features'][zipcodes[zipcodes_to_plot]]['properties']['color_type'] = 2    # mark the target area a dark color "2"
+
 
 
 chi_zipcode_to_dist = pd.read_pickle('chi_zipcode_to_dist_'+ period_str)
 
 
+# if a zip code exists in both geojson file and hood2vec statistical file, then "YES", we can visualize it. Otherwise, "NO"
 for zipcode in zipcodes:
     if shared_zips[zipcode] == 2:
         chi_json['features'][zipcodes[zipcode]]['properties']['has_data'] = 'YES'
@@ -118,7 +128,7 @@ for zipcode in zipcodes:
         chi_json['features'][zipcodes[zipcode]]['properties']['has_data'] = 'NO'
 
 
-# if zipcodes_to_plot in chi_zipcode_to_dist:
+# if closest zip codes are also in geojson file, we can visualize it. We set them to a lighter color "1"
 distances = chi_zipcode_to_dist[zipcodes_to_plot]
 num_neighbor_count = 0
 for neighbor_idx in range(len(distances)):
@@ -132,34 +142,45 @@ for neighbor_idx in range(len(distances)):
 geojson = json.dumps(chi_json)
 geo_source = GeoJSONDataSource(geojson = geojson)
 
+
+
+#
+# interactive view of hood2vec.
+#
 def make_map(zipcodes_to_plot = '60608', num_neighbor = 3, period_str = 'midday', cate= []):
+    """
+    input: updated parameters selected by users
+    output: updated visualization of nearby neighbors
+    """
     with open('chi-zip-code-tabulation-areas-2012.geojson','rt') as json_file:
         chi_json = json.load(json_file)
     chi_json['features'][zipcodes[zipcodes_to_plot]]['properties']['color_type'] = 2
 
-#         print (cate)
-
 
     chi_zipcode_to_dist = pd.read_pickle('chi_zipcode_to_dist_'+ period_str)
 
+    # for an updated period, check the shared zip codes with geojson
     shared_zips = collections.defaultdict(int)
     for zipcode in chi_zipcode_to_dist:
         shared_zips[zipcode] +=1
     for zipcode in zipcodes:
         shared_zips[zipcode] +=1
 
+# if a zip code exists in both geojson file and hood2vec statistical file, then "YES", we can visualize it. Otherwise, "NO"
     for zipcode in zipcodes:
         if shared_zips[zipcode] == 2:
             chi_json['features'][zipcodes[zipcode]]['properties']['has_data'] = 'YES'
         else:
             chi_json['features'][zipcodes[zipcode]]['properties']['has_data'] = 'NO'
 
+    # if user selects to visualize neighbors in venue type representation
     if cate == [0]:
         period_str = 'category'
 
     chi_zipcode_to_dist = pd.read_pickle('chi_zipcode_to_dist_'+ period_str)
 
-    # if zipcodes_to_plot in chi_zipcode_to_dist:
+
+# if closest zip codes are also in geojson file, we can visualize it. We set them to a lighter color "1"
     distances = chi_zipcode_to_dist[zipcodes_to_plot]
     num_neighbor_count = 0
     for neighbor_idx in range(len(distances)):
@@ -169,10 +190,8 @@ def make_map(zipcodes_to_plot = '60608', num_neighbor = 3, period_str = 'midday'
         if num_neighbor_count == num_neighbor:
             break
 
-    # convert json to string
     geojson = json.dumps(chi_json)
     geo_source = GeoJSONDataSource(geojson = geojson)
-#         geo_source.geojson = geo_source_new.geojson
 
     color_mapper = LinearColorMapper(palette=Viridis6)
     p = figure(title="Chicago",
@@ -191,11 +210,13 @@ def make_map(zipcodes_to_plot = '60608', num_neighbor = 3, period_str = 'midday'
               source=geo_source,
              )
 
+# information to hover
     hover = HoverTool(tooltips=[('Zip Code', '@ZIP'),
                                 ('Has Data', '@has_data')
                     ])
     p.add_tools(hover)
 
+# return the handler p to pass updated values to visualization
     return p
 
 
@@ -211,6 +232,7 @@ category_selection = CheckboxGroup(labels=[' category'], active = [])
 # if active = [0], it means there are a total of 1 option, and it is checked;
 # if active = [0,1], it means there are a total of 2 options, and they are both checked;
 
+# webpage modules
 div_title = Div(text=\
           """<h1><tt>hood2vec</tt> app</h1>"""
          )
@@ -238,19 +260,21 @@ div_cate = Div(text=\
                   "<tt>hood2vec</tt> metric: "
          )
 
+
+# pass user's selected parameters to backend
 def update_plot(attr, old, new):
     layout.children[1] = make_map(zipcodes_to_plot = zipcode_selection.value, \
                                   num_neighbor = int(num_selection.value), \
                                   period_str = period_selection.value,\
                                   cate = category_selection.active)
 
-
+# user's actions to update parameters
 zipcode_selection.on_change('value', update_plot)
 num_selection.on_change('value', update_plot)
 period_selection.on_change('value', update_plot)
 category_selection.on_change('active', update_plot)
 
-
+# webpage layout
 layout = row(Column(div_title,div_zipcode,zipcode_selection,div_num,num_selection,\
                     div_period,period_selection, div_cate, category_selection), make_map())
 # doc.add_root(layout)
