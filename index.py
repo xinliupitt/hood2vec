@@ -256,7 +256,7 @@ div_num = Div(text=\
 
 div_period = Div(text=\
                   "<br>You can select a <b>period</b> "+\
-                  "to visualize period-dependent nearest neighbors of the selected zip code:"
+                  "to visualize period-dependent nearest neighbors of selected zip code:"
          )
 
 div_cate = Div(text=\
