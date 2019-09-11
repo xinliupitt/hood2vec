@@ -237,6 +237,12 @@ div_title = Div(text=\
           """<h1><tt>hood2vec</tt> app</h1>"""
          )
 
+div_abstract = Div(text=\
+           "<br> The source code of this app is <a href="https://github.com/xinliupitt/hood2vec">here<\a>."+\
+           "The methods to generate the backend data is <a href="https://arxiv.org/abs/1907.11951">here<\a>."+\
+           "The whole project won Foursquare Future Cities Data Challenge."
+          )
+
 div_zipcode = Div(text=\
                   "<br>Move cursor on the map for the data availability of a zip code. "+\
                   """For a zip code with "Has Data: Yes", you can select that <b>zip code</b> from this menu: """
@@ -275,7 +281,7 @@ period_selection.on_change('value', update_plot)
 category_selection.on_change('active', update_plot)
 
 # webpage layout
-layout = row(Column(div_title,div_zipcode,zipcode_selection,div_num,num_selection,\
+layout = row(Column(div_title,div_abstract,div_zipcode,zipcode_selection,div_num,num_selection,\
                     div_period,period_selection, div_cate, category_selection), make_map())
 # doc.add_root(layout)
 curdoc().add_root(layout)
