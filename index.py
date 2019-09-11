@@ -235,7 +235,7 @@ category_selection = CheckboxGroup(labels=[' category'], active = [])
 # webpage modules
 div_title = Div(text=\
           """<h1><tt>hood2vec</tt> app</h1>"""+\
-         "<br><br>You can access <a href=\"https://github.com/xinliupitt/hood2vec\">source code</a> "+\
+         "<br>You can access <a href=\"https://github.com/xinliupitt/hood2vec\">source code</a> "+\
          "and <a href=\"https://arxiv.org/abs/1907.11951\">backend data generation</a> of this app. "+\
          "The whole project won Foursquare Data Challenge, 2019."
          )
