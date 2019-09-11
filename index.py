@@ -234,7 +234,7 @@ category_selection = CheckboxGroup(labels=[' category'], active = [])
 
 # webpage modules
 div_title = Div(text=\
-          """<h1><tt>hood2vec</tt> app</h1>"""
+          """<h2><tt>hood2vec</tt> app</h2>"""
          )
 
 div_abstract = Div(text=\
