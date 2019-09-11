@@ -238,8 +238,8 @@ div_title = Div(text=\
          )
 
 div_abstract = Div(text=\
-           "<br>The source code of this app is <a href=\"https://github.com/xinliupitt/hood2vec\">here</a>"+\
-           "The methods to generate the backend data is <a href=\"https://arxiv.org/abs/1907.11951\">here</a>"+\
+           "<br>Source code of this app: <a href=\"https://github.com/xinliupitt/hood2vec\">here</a>. "+\
+           "Methods to generate backend data: <a href=\"https://arxiv.org/abs/1907.11951\">here</a>. "+\
            "The whole project won Foursquare Data Challenge, 2019."
           )
 
@@ -256,7 +256,7 @@ div_num = Div(text=\
 
 div_period = Div(text=\
                   "<br>You can select a <b>period</b> "+\
-                  "to visualize the period-dependent nearest neighbors of the selected zip code:"
+                  "to visualize period-dependent nearest neighbors of the selected zip code:"
          )
 
 div_cate = Div(text=\
