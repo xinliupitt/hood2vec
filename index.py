@@ -238,9 +238,9 @@ div_title = Div(text=\
          )
 
 div_abstract = Div(text=\
-           "<br>The source code of this app is <a href="github.com/xinliupitt/hood2vec">here</a>"+\
-           "The methods to generate the backend data is "+\
-           "The whole project won Foursquare Future Cities Data Challenge."
+           "<br>The source code of this app is <a href=\"https://github.com/xinliupitt/hood2vec\">here</a>"+\
+           "The methods to generate the backend data is <a href=\"https://arxiv.org/abs/1907.11951\">here</a>"+\
+           "The whole project won Foursquare Data Challenge, 2019."
           )
 
 div_zipcode = Div(text=\
